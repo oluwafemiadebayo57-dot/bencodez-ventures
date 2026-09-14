@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Todo App</title>
+    <style>
+        body { font-family: sans-serif; max-width: 600px; margin: 50px auto; padding: 20px; }
+        input, button { padding: 10px; font-size: 16px; }
+        ul { list-style: none; padding: 0; }
+        li { padding: 10px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; }
+        .done { text-decoration: line-through; opacity: 0.6; }
+        .auth-form { display: flex; flex-direction: column; gap: 10px; max-width: 300px; }
+        .hidden { display: none; }
+    </style>
+</head>
+<body>
+    <h1>My Todos</h1>
+
+    <!-- Auth Section -->
+    <div id="auth-section">
+        <div class="auth-form">
+            <input id="username" placeholder="Username" />
+            <input id="password" type="password" placeholder="Password" />
+            <button onclick="register()">Register</button>
+            <button onclick="login()">Login</button>
+        </div>
+        <p id="auth-message"></p>
+    </div>
+
+    <!-- Todo Section (hidden until logged in) -->
+    <div id="todo-section" class="hidden">
+        <p>Logged in as <strong id="current-user"></strong> 
+           <button onclick="logout()">Logout</button></p>
+        <input id="new-task" placeholder="New task..." />
+        <button onclick="addTodo()">Add</button>
+        <ul id="todo-list"></ul>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
