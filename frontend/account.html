@@ -1,0 +1,405 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>My Account — Bencodez-Ventures</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="css/style.css" />
+    <style>
+      /* Profile header */
+      .profile-card {
+        background: linear-gradient(
+          135deg,
+          var(--navy) 0%,
+          var(--navy-light) 100%
+        );
+        color: var(--white);
+        padding: var(--s-8);
+        border-radius: var(--radius-lg);
+        display: flex;
+        align-items: center;
+        gap: var(--s-6);
+        margin-bottom: var(--s-8);
+        position: relative;
+        overflow: hidden;
+      }
+      .profile-card::after {
+        content: "";
+        position: absolute;
+        top: -50%;
+        right: -10%;
+        width: 300px;
+        height: 300px;
+        background: radial-gradient(
+          circle,
+          rgba(245, 180, 0, 0.15) 0%,
+          transparent 70%
+        );
+        border-radius: 50%;
+      }
+      .profile-avatar {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        background: var(--gold);
+        color: var(--navy);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: var(--fs-3xl);
+        font-weight: 800;
+        flex-shrink: 0;
+        z-index: 1;
+      }
+      .profile-info {
+        z-index: 1;
+        flex: 1;
+      }
+      .profile-info h1 {
+        color: var(--white);
+        font-size: var(--fs-3xl);
+        margin-bottom: var(--s-1);
+      }
+      .profile-info p {
+        color: rgba(255, 255, 255, 0.8);
+        font-size: var(--fs-sm);
+      }
+      .profile-info .member-since {
+        margin-top: var(--s-2);
+        font-size: var(--fs-xs);
+        color: rgba(255, 255, 255, 0.6);
+        text-transform: uppercase;
+        letter-spacing: 1px;
+      }
+      .profile-actions {
+        z-index: 1;
+        display: flex;
+        flex-direction: column;
+        gap: var(--s-2);
+      }
+
+      /* Tabs */
+      .tabs {
+        display: flex;
+        gap: var(--s-2);
+        margin-bottom: var(--s-6);
+        border-bottom: 2px solid var(--gray-100);
+      }
+      .tab-btn {
+        padding: var(--s-3) var(--s-6);
+        font-weight: 600;
+        color: var(--gray-500);
+        border-bottom: 2px solid transparent;
+        margin-bottom: -2px;
+        transition: all var(--transition);
+      }
+      .tab-btn:hover {
+        color: var(--navy);
+      }
+      .tab-btn.active {
+        color: var(--navy);
+        border-bottom-color: var(--navy);
+      }
+
+      /* Orders */
+      .order-card {
+        background: var(--white);
+        border-radius: var(--radius-lg);
+        padding: var(--s-6);
+        box-shadow: var(--shadow-sm);
+        margin-bottom: var(--s-4);
+        border-left: 4px solid var(--gray-300);
+      }
+      .order-card.status-pending {
+        border-left-color: var(--warning);
+      }
+      .order-card.status-processing {
+        border-left-color: var(--navy);
+      }
+      .order-card.status-shipped {
+        border-left-color: #8b5cf6;
+      }
+      .order-card.status-delivered {
+        border-left-color: var(--success);
+      }
+      .order-card.status-cancelled {
+        border-left-color: var(--danger);
+      }
+
+      .order-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: var(--s-4);
+        flex-wrap: wrap;
+        gap: var(--s-2);
+      }
+      .order-id {
+        font-weight: 700;
+        color: var(--navy);
+        font-size: var(--fs-base);
+      }
+      .order-date {
+        color: var(--gray-500);
+        font-size: var(--fs-sm);
+      }
+
+      .order-items {
+        border-top: 1px solid var(--gray-100);
+        padding-top: var(--s-4);
+        margin-bottom: var(--s-4);
+      }
+      .order-item {
+        display: flex;
+        justify-content: space-between;
+        padding: var(--s-2) 0;
+        font-size: var(--fs-sm);
+      }
+      .order-item .item-name {
+        color: var(--gray-700);
+      }
+      .order-item .item-qty {
+        color: var(--gray-500);
+      }
+      .order-item .item-price {
+        font-weight: 600;
+        color: var(--navy);
+      }
+
+      .order-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding-top: var(--s-4);
+        border-top: 1px solid var(--gray-100);
+        flex-wrap: wrap;
+        gap: var(--s-3);
+      }
+      .order-total {
+        font-size: var(--fs-lg);
+        font-weight: 800;
+        color: var(--navy);
+      }
+
+      /* Empty state */
+      .empty-orders {
+        text-align: center;
+        padding: var(--s-16) var(--s-6);
+        background: var(--white);
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-sm);
+      }
+      .empty-orders .icon {
+        font-size: 4rem;
+        margin-bottom: var(--s-4);
+      }
+
+      /* Admin button */
+      .btn-admin {
+        background: var(--gold);
+        color: var(--navy);
+      }
+      .btn-admin:hover {
+        background: var(--gold-hover);
+      }
+
+      @media (max-width: 768px) {
+        .profile-card {
+          flex-direction: column;
+          text-align: center;
+        }
+      }
+    </style>
+    <link rel="stylesheet" href="css/mobile.css" />
+  </head>
+  <body>
+    <!-- HEADER -->
+    <header class="header"><!-- injected by header.js --></header>
+
+    <!-- ACCOUNT -->
+    <section class="section" style="padding-top: var(--s-8)">
+      <div class="container" id="account-container">
+        <!-- Filled by JS -->
+      </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="footer">
+      <div class="container">
+        <div
+          class="footer-bottom"
+          style="border-top: none; padding-top: 0; margin-top: 0"
+        >
+          © 2026 Bencodez-Ventures. All rights reserved.
+        </div>
+      </div>
+    </footer>
+    <script src="js/header.js"></script>
+    <script>
+      const API = "http://localhost:3000";
+
+      // ---- AUTH GUARD ----
+      const token = localStorage.getItem("token");
+      const userStr = localStorage.getItem("user");
+
+      if (!token || !userStr) {
+        window.location.href = "login.html";
+      }
+
+      const user = JSON.parse(userStr);
+
+      // ---- LOGOUT ----
+      function logout() {
+        localStorage.removeItem("token");
+        localStorage.removeItem("user");
+        window.location.href = "index.html";
+      }
+
+      // ---- FORMAT ----
+      function formatDate(iso) {
+        const d = new Date(iso);
+        return d.toLocaleDateString("en-NG", {
+          day: "numeric",
+          month: "short",
+          year: "numeric",
+          hour: "2-digit",
+          minute: "2-digit",
+        });
+      }
+
+      // ---- FETCH ORDERS ----
+      async function fetchMyOrders() {
+        const res = await fetch(`${API}/orders/my-orders`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        if (!res.ok) throw new Error("Failed to load orders");
+        return await res.json();
+      }
+
+      // ---- RENDER ----
+      async function render() {
+        const container = document.getElementById("account-container");
+        const initials = user.username.charAt(0).toUpperCase();
+
+        container.innerHTML = `
+                <div class="profile-card">
+                    <div class="profile-avatar">${initials}</div>
+                    <div class="profile-info">
+                        <h1>${user.username}</h1>
+                        <p>${user.email || "No email on file"}</p>
+                        <div class="member-since">Member Account</div>
+                    </div>
+                    <div class="profile-actions">
+                        ${user.isAdmin ? `<a href="admin/dashboard.html" class="btn btn-admin">⚙️ Admin Dashboard</a>` : ""}
+                        <button onclick="logout()" class="btn btn-outline" style="border-color: white; color: white;">Logout</button>
+                    </div>
+                </div>
+
+                <div class="tabs">
+                    <button class="tab-btn active">My Orders</button>
+                </div>
+
+                <div id="orders-list">
+                    <p style="text-align: center; padding: var(--s-8); color: var(--gray-500);">Loading orders...</p>
+                </div>
+            `;
+
+        try {
+          const orders = await fetchMyOrders();
+          const ordersList = document.getElementById("orders-list");
+
+          // Update tab with count
+          document.querySelector(".tab-btn").textContent =
+            `My Orders (${orders.length})`;
+
+          if (orders.length === 0) {
+            ordersList.innerHTML = `
+                        <div class="empty-orders">
+                            <div class="icon">📦</div>
+                            <h2>No orders yet</h2>
+                            <p style="margin-bottom: var(--s-6);">Start shopping and your orders will appear here.</p>
+                            <a href="shop.html" class="btn btn-primary btn-lg">Start Shopping →</a>
+                        </div>`;
+            return;
+          }
+
+          ordersList.innerHTML = orders.map(renderOrder).join("");
+        } catch (error) {
+          console.error(error);
+          document.getElementById("orders-list").innerHTML = `
+                    <div class="empty-orders">
+                        <div class="icon">⚠️</div>
+                        <h2>Could not load orders</h2>
+                        <p>Please try again later.</p>
+                    </div>`;
+        }
+      }
+
+      function renderOrder(order) {
+        const statusClass = `status-${order.status}`;
+        const itemsHtml = order.items
+          .map(
+            (item) => `
+                <div class="order-item">
+                    <span class="item-name">${item.name} <span class="item-qty">× ${item.quantity}</span></span>
+                    <span class="item-price">₦${(item.price * item.quantity).toLocaleString()}</span>
+                </div>
+            `,
+          )
+          .join("");
+
+        // Shipping address may include newlines
+        const addressLines = (order.shippingAddress || "").split("\n");
+        const deliverTo = addressLines[0] || "";
+
+        return `
+                <div class="order-card ${statusClass}">
+                    <div class="order-header">
+                        <div>
+                            <div class="order-id">ORD-${String(order.id).padStart(5, "0")}</div>
+                            <div class="order-date">${formatDate(order.createdAt)}</div>
+                        </div>
+                        <span class="badge badge-${getStatusBadge(order.status)}">
+                            ${order.status.toUpperCase()}
+                        </span>
+                    </div>
+                    <div class="order-items">${itemsHtml}</div>
+                    <div class="order-footer">
+                        <div>
+                            <p style="font-size: var(--fs-sm); color: var(--gray-500);">
+                                Deliver to: <strong>${deliverTo}</strong> · ${order.phone}
+                            </p>
+                        </div>
+                        <div class="order-total">₦${Number(order.total).toLocaleString()}</div>
+                    </div>
+                </div>
+            `;
+      }
+
+      function getStatusBadge(status) {
+        switch (status) {
+          case "pending":
+            return "warning";
+          case "processing":
+            return "info";
+          case "shipped":
+            return "info";
+          case "delivered":
+            return "success";
+          case "cancelled":
+            return "danger";
+          default:
+            return "info";
+        }
+      }
+
+      render();
+    </script>
+  </body>
+</html>

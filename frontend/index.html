@@ -1,0 +1,554 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Bencodez-Ventures — Shop Everything</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="css/style.css" />
+    <style>
+      /* Homepage-specific styles */
+      .hero {
+        background: linear-gradient(
+          135deg,
+          var(--navy) 0%,
+          var(--navy-light) 100%
+        );
+        color: var(--white);
+        padding: var(--s-16) 0;
+        position: relative;
+        overflow: hidden;
+      }
+      .hero::after {
+        content: "";
+        position: absolute;
+        top: -50%;
+        right: -10%;
+        width: 500px;
+        height: 500px;
+        background: radial-gradient(
+          circle,
+          rgba(245, 180, 0, 0.15) 0%,
+          transparent 70%
+        );
+        border-radius: 50%;
+      }
+      .hero-inner {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: var(--s-12);
+        align-items: center;
+        position: relative;
+        z-index: 1;
+      }
+      .hero h1 {
+        color: var(--white);
+        font-size: var(--fs-5xl);
+        margin-bottom: var(--s-6);
+        line-height: 1.1;
+      }
+      .hero h1 span {
+        color: var(--gold);
+      }
+      .hero p {
+        color: rgba(255, 255, 255, 0.85);
+        font-size: var(--fs-lg);
+        margin-bottom: var(--s-8);
+        max-width: 500px;
+      }
+      .hero-buttons {
+        display: flex;
+        gap: var(--s-4);
+        flex-wrap: wrap;
+      }
+      .hero-visual {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: var(--s-4);
+      }
+      .hero-visual .card {
+        background: rgba(255, 255, 255, 0.08);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        padding: var(--s-6);
+        box-shadow: none;
+        transform: none;
+      }
+      .hero-visual .card:hover {
+        transform: none;
+      }
+      .hero-visual .card:nth-child(2) {
+        margin-top: var(--s-8);
+      }
+      .hero-visual .card:nth-child(3) {
+        margin-top: calc(var(--s-8) * -1);
+      }
+      .hero-visual h4 {
+        color: var(--white);
+        font-size: var(--fs-lg);
+      }
+      .hero-visual p {
+        color: rgba(255, 255, 255, 0.7);
+        font-size: var(--fs-sm);
+        margin: 0;
+      }
+      .hero-visual .icon {
+        font-size: var(--fs-3xl);
+        margin-bottom: var(--s-3);
+      }
+
+      /* Categories */
+      .categories-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: var(--s-6);
+      }
+      .category-card {
+        background: var(--white);
+        border-radius: var(--radius-lg);
+        padding: var(--s-8) var(--s-6);
+        text-align: center;
+        box-shadow: var(--shadow-sm);
+        transition: all var(--transition);
+        cursor: pointer;
+        border: 2px solid transparent;
+      }
+      .category-card:hover {
+        transform: translateY(-4px);
+        box-shadow: var(--shadow-lg);
+        border-color: var(--gold);
+      }
+      .category-icon {
+        font-size: 2.5rem;
+        margin-bottom: var(--s-4);
+        display: block;
+      }
+      .category-card h4 {
+        font-size: var(--fs-base);
+        margin-bottom: var(--s-1);
+      }
+      .category-card span {
+        font-size: var(--fs-sm);
+        color: var(--gray-500);
+      }
+
+      /* Product Grid */
+      .products-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+        gap: var(--s-6);
+      }
+      .product-card {
+        background: var(--white);
+        border-radius: var(--radius-lg);
+        overflow: hidden;
+        box-shadow: var(--shadow-sm);
+        transition: all var(--transition);
+        display: flex;
+        flex-direction: column;
+      }
+      .product-card:hover {
+        transform: translateY(-4px);
+        box-shadow: var(--shadow-lg);
+      }
+      .product-image {
+        background: var(--gray-100);
+        height: 220px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 4rem;
+        color: var(--gray-500);
+        position: relative;
+      }
+      .product-image .category-tag {
+        position: absolute;
+        top: var(--s-3);
+        left: var(--s-3);
+        background: var(--white);
+        padding: var(--s-1) var(--s-3);
+        border-radius: var(--radius-full);
+        font-size: var(--fs-xs);
+        font-weight: 600;
+        color: var(--navy);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+      .product-info {
+        padding: var(--s-4);
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+      }
+      .product-info h4 {
+        font-size: var(--fs-base);
+        margin-bottom: var(--s-2);
+        color: var(--charcoal);
+      }
+      .product-info .price {
+        font-size: var(--fs-xl);
+        font-weight: 700;
+        color: var(--navy);
+        margin-bottom: var(--s-4);
+      }
+      .product-info .btn {
+        margin-top: auto;
+      }
+
+      /* Features */
+      .features-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        gap: var(--s-8);
+      }
+      .feature {
+        text-align: center;
+        padding: var(--s-6);
+      }
+      .feature .icon {
+        font-size: 2.5rem;
+        margin-bottom: var(--s-4);
+        display: inline-block;
+        width: 70px;
+        height: 70px;
+        line-height: 70px;
+        background: var(--gray-100);
+        border-radius: var(--radius-full);
+      }
+      .feature h4 {
+        margin-bottom: var(--s-2);
+      }
+      .feature p {
+        font-size: var(--fs-sm);
+      }
+
+      /* Footer Grid */
+      .footer-grid {
+        display: grid;
+        grid-template-columns: 2fr 1fr 1fr 1fr;
+        gap: var(--s-8);
+      }
+      .footer-grid p {
+        color: rgba(255, 255, 255, 0.7);
+        font-size: var(--fs-sm);
+      }
+      .footer-grid ul {
+        list-style: none;
+      }
+      .footer-grid li {
+        margin-bottom: var(--s-2);
+      }
+
+      /* Mobile */
+      @media (max-width: 768px) {
+        .hero-inner {
+          grid-template-columns: 1fr;
+        }
+        .hero-visual {
+          display: none;
+        }
+        .footer-grid {
+          grid-template-columns: 1fr 1fr;
+        }
+        .nav {
+          display: none;
+        }
+      }
+    </style>
+    <link rel="stylesheet" href="css/mobile.css" />
+  </head>
+  <body>
+    <!-- HEADER -->
+    <header class="header"><!-- injected by header.js --></header>
+
+    <!-- HERO -->
+    <section class="hero">
+      <div class="container hero-inner">
+        <div>
+          <h1>Everything you need, <span>all in one place.</span></h1>
+          <p>
+            From the latest gadgets to everyday essentials — clothes, cosmetics,
+            jewellery, and more. Shop smart with Bencodez-Ventures.
+          </p>
+          <div class="hero-buttons">
+            <a href="shop.html" class="btn btn-accent btn-lg">Shop Now →</a>
+            <a
+              href="#categories"
+              class="btn btn-outline btn-lg"
+              style="border-color: white; color: white"
+              >Browse Categories</a
+            >
+          </div>
+        </div>
+        <div class="hero-visual">
+          <div class="card">
+            <div class="icon">📱</div>
+            <h4>Latest Gadgets</h4>
+            <p>Tech that keeps up with you</p>
+          </div>
+          <div class="card">
+            <div class="icon">👕</div>
+            <h4>Trendy Fashion</h4>
+            <p>Style for every occasion</p>
+          </div>
+          <div class="card">
+            <div class="icon">💄</div>
+            <h4>Beauty & Care</h4>
+            <p>Feel your best every day</p>
+          </div>
+          <div class="card">
+            <div class="icon">💎</div>
+            <h4>Fine Jewellery</h4>
+            <p>Elegance in every piece</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CATEGORIES -->
+    <section class="section" id="categories">
+      <div class="container">
+        <div class="section-header">
+          <h2>Shop by Category</h2>
+          <p>Whatever you're looking for, we've got a section for it.</p>
+        </div>
+        <div class="categories-grid">
+          <a href="shop.html?category=clothes" class="category-card">
+            <span class="category-icon">👕</span>
+            <h4>Clothes</h4>
+            <span>Fashion for all</span>
+          </a>
+          <a href="shop.html?category=gadgets" class="category-card">
+            <span class="category-icon">📱</span>
+            <h4>Gadgets</h4>
+            <span>Tech essentials</span>
+          </a>
+          <a href="shop.html?category=cosmetics" class="category-card">
+            <span class="category-icon">💄</span>
+            <h4>Cosmetics</h4>
+            <span>Beauty picks</span>
+          </a>
+          <a href="shop.html?category=deodorants" class="category-card">
+            <span class="category-icon">🧴</span>
+            <h4>Deodorants</h4>
+            <span>Stay fresh</span>
+          </a>
+          <a href="shop.html?category=jewellery" class="category-card">
+            <span class="category-icon">💎</span>
+            <h4>Jewellery</h4>
+            <span>Sparkle daily</span>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- FEATURED PRODUCTS -->
+    <section class="section" style="background: var(--white)">
+      <div class="container">
+        <div class="section-header">
+          <h2>Featured Products</h2>
+          <p>Handpicked items our customers love.</p>
+        </div>
+        <div class="products-grid">
+          <div class="product-card">
+            <div class="product-image">
+              <span class="category-tag">Gadgets</span>
+              🎧
+            </div>
+            <div class="product-info">
+              <h4>Wireless Headphones</h4>
+              <div class="price">₦45,000</div>
+              <a href="product.html" class="btn btn-primary btn-block"
+                >View Details</a
+              >
+            </div>
+          </div>
+
+          <div class="product-card">
+            <div class="product-image">
+              <span class="category-tag">Clothes</span>
+              👖
+            </div>
+            <div class="product-info">
+              <h4>Classic Denim Jeans</h4>
+              <div class="price">₦18,500</div>
+              <a href="product.html" class="btn btn-primary btn-block"
+                >View Details</a
+              >
+            </div>
+          </div>
+
+          <div class="product-card">
+            <div class="product-image">
+              <span class="category-tag">Cosmetics</span>
+              💄
+            </div>
+            <div class="product-info">
+              <h4>Matte Lipstick Set</h4>
+              <div class="price">₦9,800</div>
+              <a href="product.html" class="btn btn-primary btn-block"
+                >View Details</a
+              >
+            </div>
+          </div>
+
+          <div class="product-card">
+            <div class="product-image">
+              <span class="category-tag">Jewellery</span>
+              💍
+            </div>
+            <div class="product-info">
+              <h4>Silver Ring</h4>
+              <div class="price">₦22,000</div>
+              <a href="product.html" class="btn btn-primary btn-block"
+                >View Details</a
+              >
+            </div>
+          </div>
+        </div>
+        <div class="text-center mt-8">
+          <a href="shop.html" class="btn btn-outline btn-lg"
+            >See All Products →</a
+          >
+        </div>
+      </div>
+    </section>
+
+    <!-- FEATURES -->
+    <section class="section" id="about">
+      <div class="container">
+        <div class="section-header">
+          <h2>Why Shop With Us</h2>
+          <p>Great products. Fair prices. Honest service.</p>
+        </div>
+        <div class="features-grid">
+          <div class="feature">
+            <span class="icon">🚚</span>
+            <h4>Fast Delivery</h4>
+            <p>
+              Get your orders delivered quickly and safely to your doorstep.
+            </p>
+          </div>
+          <div class="feature">
+            <span class="icon">💯</span>
+            <h4>Quality Guaranteed</h4>
+            <p>
+              Every product is handpicked and verified before it reaches you.
+            </p>
+          </div>
+          <div class="feature">
+            <span class="icon">💰</span>
+            <h4>Fair Prices</h4>
+            <p>Premium products without the premium markup. Value, always.</p>
+          </div>
+          <div class="feature">
+            <span class="icon">🤝</span>
+            <h4>Trusted Service</h4>
+            <p>
+              We treat every customer like family. Your satisfaction comes
+              first.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="footer" id="contact">
+      <div class="container">
+        <div class="footer-grid">
+          <div>
+            <h4 class="logo" style="color: white">Bencodez<span>.</span></h4>
+            <p>
+              Your one-stop shop for gadgets, fashion, beauty, and more. Quality
+              you can trust, prices you'll love.
+            </p>
+          </div>
+          <div>
+            <h4>Shop</h4>
+            <ul>
+              <li><a href="shop.html?category=clothes">Clothes</a></li>
+              <li><a href="shop.html?category=gadgets">Gadgets</a></li>
+              <li><a href="shop.html?category=cosmetics">Cosmetics</a></li>
+              <li><a href="shop.html?category=jewellery">Jewellery</a></li>
+            </ul>
+          </div>
+          <div>
+            <h4>Account</h4>
+            <ul>
+              <li><a href="login.html">Login</a></li>
+              <li><a href="register.html">Register</a></li>
+              <li><a href="account.html">My Orders</a></li>
+              <li><a href="cart.html">Cart</a></li>
+            </ul>
+          </div>
+          <div>
+            <h4>Contact</h4>
+            <ul>
+              <li>📧 hello@bencodez.com</li>
+              <li>📞 +234 800 000 0000</li>
+              <li>📍 Lagos, Nigeria</li>
+            </ul>
+          </div>
+        </div>
+        <div class="footer-bottom">
+          © 2026 Bencodez-Ventures. All rights reserved.
+        </div>
+      </div>
+    </footer>
+    <script src="js/header.js"></script>
+    <script>
+      const API = "http://localhost:3000";
+
+      async function loadFeaturedProducts() {
+        const grid = document.getElementById("featured-grid");
+        if (!grid) return;
+
+        try {
+          const res = await fetch(`${API}/products`);
+          if (!res.ok) throw new Error("Failed to load");
+          const products = await res.json();
+          const featured = products.slice(0, 4);
+
+          if (featured.length === 0) {
+            grid.innerHTML = `<div style="grid-column: 1 / -1; text-align: center; padding: var(--s-8); color: var(--gray-500);">No products yet. Check back soon!</div>`;
+            return;
+          }
+
+          grid.innerHTML = featured
+            .map(
+              (p) => `
+                    <div class="product-card">
+                        <div class="product-image">
+                            <span class="category-tag">${p.category}</span>
+                            ${p.stock === 0 ? '<span style="position: absolute; top: 12px; right: 12px; background: var(--danger); color: white; padding: 2px 10px; border-radius: 999px; font-size: 0.7rem; font-weight: 700;">OUT</span>' : ""}
+                            ${
+                              p.image_url
+                                ? `<img src="${p.image_url}" alt="${p.name}" style="width:100%; height:100%; object-fit:cover;">`
+                                : "📦"
+                            }
+                        </div>
+                        <div class="product-info">
+                            <h4>${p.name}</h4>
+                            <div class="price">₦${Number(p.price).toLocaleString()}</div>
+                            <a href="product.html?id=${p.id}" class="btn btn-primary btn-block">View Details</a>
+                        </div>
+                    </div>
+                `,
+            )
+            .join("");
+        } catch (error) {
+          console.error(error);
+          grid.innerHTML = `<div style="grid-column: 1 / -1; text-align: center; padding: var(--s-8); color: var(--gray-500);">Could not load products.</div>`;
+        }
+      }
+
+      loadFeaturedProducts();
+    </script>
+  </body>
+</html>

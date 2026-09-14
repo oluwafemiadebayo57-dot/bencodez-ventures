@@ -1,0 +1,364 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Shop — Bencodez-Ventures</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="css/style.css" />
+    <style>
+      .shop-layout {
+        display: grid;
+        grid-template-columns: 240px 1fr;
+        gap: var(--s-8);
+        margin-top: var(--s-8);
+      }
+
+      .sidebar {
+        background: var(--white);
+        border-radius: var(--radius-lg);
+        padding: var(--s-6);
+        box-shadow: var(--shadow-sm);
+        height: fit-content;
+        position: sticky;
+        top: 100px;
+      }
+      .sidebar h4 {
+        font-size: var(--fs-base);
+        margin-bottom: var(--s-4);
+        padding-bottom: var(--s-3);
+        border-bottom: 1px solid var(--gray-100);
+      }
+      .category-list { list-style: none; }
+      .category-list li { margin-bottom: var(--s-1); }
+      .category-list button {
+        width: 100%;
+        text-align: left;
+        padding: var(--s-2) var(--s-3);
+        border-radius: var(--radius);
+        color: var(--gray-700);
+        font-size: var(--fs-sm);
+        font-weight: 500;
+        transition: all var(--transition);
+      }
+      .category-list button:hover {
+        background: var(--gray-100);
+        color: var(--navy);
+      }
+      .category-list button.active {
+        background: var(--navy);
+        color: var(--white);
+      }
+
+      .shop-topbar {
+        display: flex;
+        gap: var(--s-4);
+        margin-bottom: var(--s-6);
+        flex-wrap: wrap;
+      }
+      .search-input {
+        flex: 1;
+        min-width: 200px;
+        padding: var(--s-3) var(--s-4);
+        border: 2px solid var(--gray-300);
+        border-radius: var(--radius);
+        font-size: var(--fs-base);
+        background: var(--white);
+      }
+      .search-input:focus {
+        outline: none;
+        border-color: var(--navy);
+      }
+      .sort-select {
+        padding: var(--s-3) var(--s-4);
+        border: 2px solid var(--gray-300);
+        border-radius: var(--radius);
+        font-size: var(--fs-base);
+        background: var(--white);
+        cursor: pointer;
+      }
+
+      .products-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+        gap: var(--s-6);
+      }
+      .product-card {
+        background: var(--white);
+        border-radius: var(--radius-lg);
+        overflow: hidden;
+        box-shadow: var(--shadow-sm);
+        transition: all var(--transition);
+        display: flex;
+        flex-direction: column;
+      }
+      .product-card:hover {
+        transform: translateY(-4px);
+        box-shadow: var(--shadow-lg);
+      }
+      .product-image {
+        background: var(--gray-100);
+        height: 200px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 3.5rem;
+        position: relative;
+        overflow: hidden;
+      }
+      .product-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+      .product-image .category-tag {
+        position: absolute;
+        top: var(--s-3);
+        left: var(--s-3);
+        background: var(--white);
+        padding: var(--s-1) var(--s-3);
+        border-radius: var(--radius-full);
+        font-size: var(--fs-xs);
+        font-weight: 600;
+        color: var(--navy);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        z-index: 1;
+      }
+      .product-image .stock-badge {
+        position: absolute;
+        top: var(--s-3);
+        right: var(--s-3);
+        background: var(--danger);
+        color: var(--white);
+        padding: var(--s-1) var(--s-3);
+        border-radius: var(--radius-full);
+        font-size: var(--fs-xs);
+        font-weight: 600;
+        z-index: 1;
+      }
+      .product-info {
+        padding: var(--s-4);
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+      }
+      .product-info h4 {
+        font-size: var(--fs-base);
+        margin-bottom: var(--s-2);
+        color: var(--charcoal);
+      }
+      .product-info .price {
+        font-size: var(--fs-lg);
+        font-weight: 700;
+        color: var(--navy);
+        margin-bottom: var(--s-3);
+      }
+      .product-info .btn { margin-top: auto; }
+
+      .empty-state {
+        text-align: center;
+        padding: var(--s-16) var(--s-6);
+        background: var(--white);
+        border-radius: var(--radius-lg);
+        grid-column: 1 / -1;
+      }
+      .empty-state .icon {
+        font-size: 4rem;
+        margin-bottom: var(--s-4);
+      }
+      .empty-state h3 { margin-bottom: var(--s-2); }
+
+      @media (max-width: 768px) {
+        .shop-layout { grid-template-columns: 1fr; }
+        .sidebar { position: static; }
+      }
+    </style>
+    <link rel="stylesheet" href="css/mobile.css" />
+  </head>
+  <body>
+    <header class="header"><!-- injected by header.js --></header>
+
+    <section class="section">
+      <div class="container">
+        <div class="section-header" style="text-align: left; margin-bottom: var(--s-4)">
+          <h2>Shop All Products</h2>
+          <p>Browse our full collection across all categories.</p>
+        </div>
+
+        <div class="shop-layout">
+          <aside class="sidebar">
+            <h4>Categories</h4>
+            <ul class="category-list" id="category-list">
+              <li><button data-category="all" class="active">All Products</button></li>
+              <li><button data-category="clothes">👕 Clothes</button></li>
+              <li><button data-category="gadgets">📱 Gadgets</button></li>
+              <li><button data-category="cosmetics">💄 Cosmetics</button></li>
+              <li><button data-category="deodorants">🧴 Deodorants</button></li>
+              <li><button data-category="jewellery">💎 Jewellery</button></li>
+            </ul>
+          </aside>
+
+          <div>
+            <div class="shop-topbar">
+              <input type="text" class="search-input" id="search-input" placeholder="Search products..." />
+              <select class="sort-select" id="sort-select">
+                <option value="newest">Newest First</option>
+                <option value="price-asc">Price: Low → High</option>
+                <option value="price-desc">Price: High → Low</option>
+                <option value="name">Name: A → Z</option>
+              </select>
+            </div>
+
+            <div class="products-grid" id="products-grid"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <footer class="footer">
+      <div class="container">
+        <div class="footer-bottom" style="border-top: none; padding-top: 0; margin-top: 0">
+          © 2026 Bencodez-Ventures. All rights reserved.
+        </div>
+      </div>
+    </footer>
+
+    <script src="js/header.js"></script>
+    <script>
+      const API = "http://localhost:3000";
+
+      async function fetchProducts() {
+        const res = await fetch(`${API}/products`);
+        if (!res.ok) throw new Error("Failed to load products");
+        return await res.json();
+      }
+
+      let products = [];
+      let currentCategory = "all";
+      let currentSearch = "";
+      let currentSort = "newest";
+
+      function renderProducts() {
+        const grid = document.getElementById("products-grid");
+
+        // Filter
+        let filtered = products.filter((p) => {
+          const matchesCategory =
+            currentCategory === "all" || p.category === currentCategory;
+          const matchesSearch = p.name
+            .toLowerCase()
+            .includes(currentSearch.toLowerCase());
+          return matchesCategory && matchesSearch;
+        });
+
+        // Sort
+        if (currentSort === "price-asc")
+          filtered.sort((a, b) => Number(a.price) - Number(b.price));
+        if (currentSort === "price-desc")
+          filtered.sort((a, b) => Number(b.price) - Number(a.price));
+        if (currentSort === "name")
+          filtered.sort((a, b) => a.name.localeCompare(b.name));
+        if (currentSort === "newest") filtered.sort((a, b) => b.id - a.id);
+
+        // Empty state
+        if (filtered.length === 0) {
+          grid.innerHTML = `
+            <div class="empty-state">
+              <div class="icon">🔍</div>
+              <h3>No products found</h3>
+              <p>Try a different category or search term.</p>
+            </div>`;
+          return;
+        }
+
+        // Render products
+        grid.innerHTML = filtered
+          .map(
+            (p) => `
+            <div class="product-card">
+              <div class="product-image">
+                <span class="category-tag">${p.category}</span>
+                ${p.stock === 0 ? '<span class="stock-badge">Out of Stock</span>' : ""}
+                ${
+                  p.image_url
+                    ? `<img src="${p.image_url}" alt="${p.name}">`
+                    : "📦"
+                }
+              </div>
+              <div class="product-info">
+                <h4>${p.name}</h4>
+                <div class="price">₦${Number(p.price).toLocaleString()}</div>
+                <a href="product.html?id=${p.id}" class="btn btn-primary btn-block">
+                  ${p.stock === 0 ? "View" : "View Details"}
+                </a>
+              </div>
+            </div>
+          `,
+          )
+          .join("");
+      }
+
+      // ---- CATEGORY FILTER ----
+      document.querySelectorAll("#category-list button").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          document
+            .querySelectorAll("#category-list button")
+            .forEach((b) => b.classList.remove("active"));
+          btn.classList.add("active");
+          currentCategory = btn.dataset.category;
+          renderProducts();
+        });
+      });
+
+      // ---- SEARCH ----
+      document.getElementById("search-input").addEventListener("input", (e) => {
+        currentSearch = e.target.value;
+        renderProducts();
+      });
+
+      // ---- SORT ----
+      document.getElementById("sort-select").addEventListener("change", (e) => {
+        currentSort = e.target.value;
+        renderProducts();
+      });
+
+      // ---- URL PARAM ----
+      const params = new URLSearchParams(window.location.search);
+      const urlCategory = params.get("category");
+      if (urlCategory) {
+        currentCategory = urlCategory;
+        const targetBtn = document.querySelector(
+          `#category-list button[data-category="${urlCategory}"]`,
+        );
+        if (targetBtn) {
+          document
+            .querySelectorAll("#category-list button")
+            .forEach((b) => b.classList.remove("active"));
+          targetBtn.classList.add("active");
+        }
+      }
+
+      // ---- INIT ----
+      (async function init() {
+        const grid = document.getElementById("products-grid");
+        grid.innerHTML = `<div class="empty-state"><p>Loading products...</p></div>`;
+
+        try {
+          products = await fetchProducts();
+          renderProducts();
+        } catch (error) {
+          console.error(error);
+          grid.innerHTML = `
+            <div class="empty-state">
+              <div class="icon">⚠️</div>
+              <h3>Could not load products</h3>
+              <p>Make sure the backend is running.</p>
+            </div>`;
+        }
+      })();
+    </script>
+  </body>
+</html>

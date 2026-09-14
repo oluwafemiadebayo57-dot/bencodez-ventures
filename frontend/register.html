@@ -1,0 +1,344 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Create Account — Bencodez-Ventures</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="css/style.css" />
+    <style>
+      .auth-layout {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        min-height: 100vh;
+      }
+      .auth-brand {
+        background: linear-gradient(
+          135deg,
+          var(--navy) 0%,
+          var(--navy-light) 100%
+        );
+        color: var(--white);
+        padding: var(--s-12);
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        position: relative;
+        overflow: hidden;
+      }
+      .auth-brand::after {
+        content: "";
+        position: absolute;
+        bottom: -100px;
+        right: -100px;
+        width: 400px;
+        height: 400px;
+        background: radial-gradient(
+          circle,
+          rgba(245, 180, 0, 0.2) 0%,
+          transparent 70%
+        );
+        border-radius: 50%;
+      }
+      .auth-brand .logo {
+        font-size: var(--fs-2xl);
+        font-weight: 800;
+        color: var(--white);
+        z-index: 1;
+      }
+      .auth-brand .logo span {
+        color: var(--gold);
+      }
+      .auth-brand-content {
+        position: relative;
+        z-index: 1;
+      }
+      .auth-brand-content h2 {
+        color: var(--white);
+        font-size: var(--fs-4xl);
+        margin-bottom: var(--s-4);
+      }
+      .auth-brand-content p {
+        color: rgba(255, 255, 255, 0.8);
+        font-size: var(--fs-lg);
+        max-width: 400px;
+      }
+      .auth-brand-features {
+        position: relative;
+        z-index: 1;
+        display: flex;
+        flex-direction: column;
+        gap: var(--s-4);
+      }
+      .auth-brand-features .feature-item {
+        display: flex;
+        gap: var(--s-3);
+        align-items: center;
+        color: rgba(255, 255, 255, 0.9);
+        font-size: var(--fs-sm);
+      }
+      .auth-brand-features .check {
+        width: 24px;
+        height: 24px;
+        background: var(--gold);
+        color: var(--navy);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 0.75rem;
+        flex-shrink: 0;
+      }
+
+      .auth-form-wrapper {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: var(--s-12);
+        background: var(--off-white);
+      }
+      .auth-form-box {
+        width: 100%;
+        max-width: 420px;
+      }
+      .auth-form-box h1 {
+        font-size: var(--fs-3xl);
+        margin-bottom: var(--s-2);
+      }
+      .auth-form-box .subtitle {
+        color: var(--gray-500);
+        margin-bottom: var(--s-8);
+      }
+      .auth-form-box form {
+        background: var(--white);
+        padding: var(--s-8);
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow);
+      }
+      .auth-form-box .btn {
+        margin-top: var(--s-4);
+      }
+      .auth-form-box .switch-link {
+        text-align: center;
+        margin-top: var(--s-6);
+        font-size: var(--fs-sm);
+        color: var(--gray-500);
+      }
+      .auth-form-box .switch-link a {
+        color: var(--navy);
+        font-weight: 600;
+      }
+      .auth-form-box .switch-link a:hover {
+        color: var(--gold-hover);
+      }
+
+      .alert {
+        padding: var(--s-3) var(--s-4);
+        border-radius: var(--radius);
+        font-size: var(--fs-sm);
+        margin-bottom: var(--s-4);
+        display: none;
+      }
+      .alert.show {
+        display: block;
+      }
+      .alert-error {
+        background: #fee2e2;
+        color: var(--danger);
+      }
+      .alert-success {
+        background: #dcfce7;
+        color: var(--success);
+      }
+
+      .back-home {
+        position: absolute;
+        top: var(--s-6);
+        left: var(--s-6);
+        color: var(--gray-500);
+        font-size: var(--fs-sm);
+        z-index: 2;
+      }
+      .back-home:hover {
+        color: var(--navy);
+      }
+
+      @media (max-width: 900px) {
+        .auth-layout {
+          grid-template-columns: 1fr;
+        }
+        .auth-brand {
+          display: none;
+        }
+      }
+    </style>
+    <link rel="stylesheet" href="css/mobile.css" />
+  </head>
+  <body>
+    <div class="auth-layout">
+      <!-- BRAND SIDE -->
+      <div class="auth-brand">
+        <a href="index.html" class="logo">Bencodez<span>.</span></a>
+        <div class="auth-brand-content">
+          <h2>Join thousands shopping smarter.</h2>
+          <p>
+            Create your account and start shopping for gadgets, fashion, beauty,
+            and more — all in one place.
+          </p>
+        </div>
+        <div class="auth-brand-features">
+          <div class="feature-item">
+            <span class="check">✓</span>
+            <span>Fast delivery across Nigeria</span>
+          </div>
+          <div class="feature-item">
+            <span class="check">✓</span>
+            <span>Secure checkout</span>
+          </div>
+          <div class="feature-item">
+            <span class="check">✓</span>
+            <span>Track your orders anytime</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- FORM SIDE -->
+      <div class="auth-form-wrapper">
+        <a href="index.html" class="back-home">← Back to Home</a>
+
+        <div class="auth-form-box">
+          <h1>Create Account</h1>
+          <p class="subtitle">It only takes a minute.</p>
+
+          <div class="alert alert-error" id="alert-box"></div>
+          <div class="alert alert-success" id="success-box"></div>
+
+          <form id="register-form">
+            <div class="form-group">
+              <label for="username">Username</label>
+              <input
+                type="text"
+                class="form-control"
+                id="username"
+                placeholder="johndoe"
+                required
+                minlength="3"
+                maxlength="30"
+                autocomplete="username"
+              />
+            </div>
+            <div class="form-group">
+              <label for="email">Email</label>
+              <input
+                type="email"
+                class="form-control"
+                id="email"
+                placeholder="you@example.com"
+                required
+                autocomplete="email"
+              />
+            </div>
+            <div class="form-group">
+              <label for="password">Password</label>
+              <input
+                type="password"
+                class="form-control"
+                id="password"
+                placeholder="At least 6 characters"
+                required
+                minlength="6"
+                autocomplete="new-password"
+              />
+            </div>
+            <button
+              type="submit"
+              class="btn btn-primary btn-block btn-lg"
+              id="submit-btn"
+            >
+              Create Account
+            </button>
+          </form>
+
+          <p class="switch-link">
+            Already have an account? <a href="login.html">Log in</a>
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const API = "http://localhost:3000";
+
+      const form = document.getElementById("register-form");
+      const alertBox = document.getElementById("alert-box");
+      const successBox = document.getElementById("success-box");
+      const submitBtn = document.getElementById("submit-btn");
+
+      function showError(message) {
+        alertBox.textContent = message;
+        alertBox.classList.add("show");
+        successBox.classList.remove("show");
+      }
+      function showSuccess(message) {
+        successBox.textContent = message;
+        successBox.classList.add("show");
+        alertBox.classList.remove("show");
+      }
+
+      form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        const username = document.getElementById("username").value.trim();
+        const email = document.getElementById("email").value.trim();
+        const password = document.getElementById("password").value;
+
+        // Reset
+        alertBox.classList.remove("show");
+        successBox.classList.remove("show");
+
+        // Disable button
+        submitBtn.disabled = true;
+        submitBtn.textContent = "Creating account...";
+
+        try {
+          const res = await fetch(`${API}/auth/register`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ username, email, password }),
+          });
+
+          const data = await res.json();
+
+          if (!res.ok) {
+            // Handle Joi validation errors
+            if (data.details && Array.isArray(data.details)) {
+              showError(data.details.join(" • "));
+            } else {
+              showError(data.error || "Registration failed");
+            }
+            submitBtn.disabled = false;
+            submitBtn.textContent = "Create Account";
+            return;
+          }
+
+          // Success!
+          showSuccess("Account created! Redirecting to login...");
+          setTimeout(() => {
+            window.location.href = "login.html";
+          }, 1500);
+        } catch (error) {
+          console.error(error);
+          showError("Cannot connect to server. Is the backend running?");
+          submitBtn.disabled = false;
+          submitBtn.textContent = "Create Account";
+        }
+      });
+    </script>
+  </body>
+</html>

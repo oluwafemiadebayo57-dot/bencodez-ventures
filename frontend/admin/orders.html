@@ -1,0 +1,538 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Orders — Admin · Bencodez-Ventures</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../css/style.css" />
+    <link rel="stylesheet" href="../css/admin.css" />
+    <style>
+      .status-tabs {
+        display: flex;
+        gap: var(--s-2);
+        margin-bottom: var(--s-6);
+        overflow-x: auto;
+        padding-bottom: var(--s-2);
+      }
+      .status-tab {
+        padding: var(--s-2) var(--s-4);
+        border-radius: var(--radius-full);
+        font-size: var(--fs-sm);
+        font-weight: 600;
+        background: white;
+        color: var(--gray-700);
+        border: 2px solid var(--gray-100);
+        transition: all var(--transition);
+        white-space: nowrap;
+      }
+      .status-tab:hover {
+        border-color: var(--navy);
+      }
+      .status-tab.active {
+        background: var(--navy);
+        color: white;
+        border-color: var(--navy);
+      }
+      .status-tab .count {
+        display: inline-block;
+        background: rgba(255, 255, 255, 0.2);
+        padding: 1px 8px;
+        border-radius: var(--radius-full);
+        margin-left: var(--s-2);
+        font-size: var(--fs-xs);
+      }
+      .status-tab:not(.active) .count {
+        background: var(--gray-100);
+        color: var(--gray-700);
+      }
+
+      .status-select {
+        padding: var(--s-2) var(--s-3);
+        border: 2px solid var(--gray-300);
+        border-radius: var(--radius);
+        font-size: var(--fs-xs);
+        font-weight: 600;
+        background: white;
+        cursor: pointer;
+        text-transform: uppercase;
+      }
+      .status-select.pending {
+        border-color: var(--warning);
+        color: var(--warning);
+      }
+      .status-select.processing {
+        border-color: var(--navy);
+        color: var(--navy);
+      }
+      .status-select.shipped {
+        border-color: #8b5cf6;
+        color: #8b5cf6;
+      }
+      .status-select.delivered {
+        border-color: var(--success);
+        color: var(--success);
+      }
+      .status-select.cancelled {
+        border-color: var(--danger);
+        color: var(--danger);
+      }
+
+      .order-details-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: var(--s-6);
+        padding-bottom: var(--s-4);
+        border-bottom: 1px solid var(--gray-100);
+        gap: var(--s-4);
+        flex-wrap: wrap;
+      }
+      .order-details-header h2 {
+        font-size: var(--fs-xl);
+      }
+      .order-details-header .date {
+        font-size: var(--fs-xs);
+        color: var(--gray-500);
+      }
+
+      .detail-section {
+        margin-bottom: var(--s-6);
+      }
+      .detail-section h4 {
+        font-size: var(--fs-xs);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        color: var(--gray-500);
+        margin-bottom: var(--s-3);
+      }
+      .detail-section p {
+        font-size: var(--fs-sm);
+        color: var(--gray-700);
+        margin-bottom: var(--s-1);
+      }
+
+      .order-items-list {
+        border: 1px solid var(--gray-100);
+        border-radius: var(--radius);
+        overflow: hidden;
+      }
+      .order-items-list .item-row {
+        display: grid;
+        grid-template-columns: 40px 1fr auto auto;
+        gap: var(--s-3);
+        padding: var(--s-3) var(--s-4);
+        align-items: center;
+        border-bottom: 1px solid var(--gray-100);
+        font-size: var(--fs-sm);
+      }
+      .order-items-list .item-row:last-child {
+        border-bottom: none;
+      }
+      .order-items-list .item-icon {
+        font-size: 1.4rem;
+      }
+      .order-items-list .item-name {
+        font-weight: 600;
+        color: var(--navy);
+      }
+      .order-items-list .item-qty {
+        color: var(--gray-500);
+        font-size: var(--fs-xs);
+      }
+      .order-items-list .item-price {
+        font-weight: 700;
+        color: var(--navy);
+      }
+
+      .order-total-row {
+        display: flex;
+        justify-content: space-between;
+        padding: var(--s-4);
+        background: var(--gray-100);
+        border-radius: var(--radius);
+        margin-top: var(--s-4);
+        font-weight: 800;
+        color: var(--navy);
+        font-size: var(--fs-lg);
+      }
+
+      .empty-orders {
+        padding: var(--s-12);
+        text-align: center;
+        color: var(--gray-500);
+      }
+      .empty-orders .icon {
+        font-size: 3rem;
+        margin-bottom: var(--s-3);
+      }
+    </style>
+    <link rel="stylesheet" href="../css/mobile.css" />
+  </head>
+  <body class="admin-body">
+    <!-- SIDEBAR -->
+    <aside class="admin-sidebar">
+      <div class="admin-logo">
+        <a href="../index.html" class="logo">Bencodez<span>.</span></a>
+        <span class="admin-tag">Admin</span>
+      </div>
+      <nav class="admin-nav">
+        <a href="dashboard.html"><span>📊</span> Dashboard</a>
+        <a href="products.html"><span>📦</span> Products</a>
+        <a href="orders.html" class="active"><span>🛒</span> Orders</a>
+        <a href="users.html"><span>👥</span> Users</a>
+      </nav>
+      <div class="admin-sidebar-footer">
+        <a href="../index.html"><span>🏠</span> Back to Store</a>
+        <a href="#" onclick="logout()"><span>🚪</span> Logout</a>
+      </div>
+    </aside>
+
+    <!-- MAIN -->
+    <main class="admin-main">
+      <div class="admin-topbar">
+        <div>
+          <h1>Orders</h1>
+          <p>Manage and track all customer orders.</p>
+        </div>
+      </div>
+
+      <!-- STATUS TABS -->
+      <div class="status-tabs" id="status-tabs">
+        <!-- Filled by JS -->
+      </div>
+
+      <!-- SEARCH -->
+      <div class="filter-bar">
+        <input
+          type="text"
+          id="search-input"
+          placeholder="Search by order ID or customer name..."
+        />
+      </div>
+
+      <!-- ORDERS TABLE -->
+      <div class="admin-panel">
+        <div id="orders-table-container">
+          <!-- Filled by JS -->
+        </div>
+      </div>
+    </main>
+
+    <!-- ORDER DETAILS MODAL -->
+    <div class="modal-overlay" id="modal-overlay">
+      <div class="modal" style="max-width: 600px">
+        <div id="modal-content">
+          <!-- Filled by JS -->
+        </div>
+      </div>
+    </div>
+
+    <!-- TOAST -->
+    <div class="toast" id="toast">Updated!</div>
+
+    <script>
+      const API = "http://localhost:3000";
+
+      // ---- AUTH ----
+      const token = localStorage.getItem("token");
+      const userStr = localStorage.getItem("user");
+      if (!token || !userStr) window.location.href = "../login.html";
+      const user = JSON.parse(userStr);
+      if (!user.isAdmin) {
+        alert("Access denied. Admin only.");
+        window.location.href = "../index.html";
+      }
+      function logout() {
+        localStorage.removeItem("token");
+        localStorage.removeItem("user");
+        window.location.href = "../index.html";
+      }
+
+      // ---- API HELPER ----
+      async function apiFetch(path, options = {}) {
+        const res = await fetch(`${API}${path}`, {
+          ...options,
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+            ...(options.headers || {}),
+          },
+        });
+        const data = res.status === 204 ? null : await res.json();
+        if (!res.ok)
+          throw new Error(
+            (data && data.error) || `Request failed: ${res.status}`,
+          );
+        return data;
+      }
+
+      function showToast(message, type = "success") {
+        const toast = document.getElementById("toast");
+        toast.textContent = message;
+        toast.className = `toast show ${type}`;
+        setTimeout(() => toast.classList.remove("show"), 2500);
+      }
+
+      // ---- STATE ----
+      let orders = [];
+      let currentStatus = "all";
+      let currentSearch = "";
+      const STATUSES = [
+        "pending",
+        "processing",
+        "shipped",
+        "delivered",
+        "cancelled",
+      ];
+
+      // ---- LOAD ----
+      async function loadOrders() {
+        try {
+          orders = await apiFetch("/orders/admin/all");
+          renderTabs();
+          renderTable();
+        } catch (error) {
+          console.error(error);
+          showToast(error.message, "error");
+        }
+      }
+
+      // ---- TABS ----
+      function renderTabs() {
+        const counts = { all: orders.length };
+        STATUSES.forEach(
+          (s) => (counts[s] = orders.filter((o) => o.status === s).length),
+        );
+
+        document.getElementById("status-tabs").innerHTML = `
+                <button class="status-tab ${currentStatus === "all" ? "active" : ""}" onclick="setStatus('all')">
+                    All <span class="count">${counts.all}</span>
+                </button>
+                ${STATUSES.map(
+                  (s) => `
+                    <button class="status-tab ${currentStatus === s ? "active" : ""}" onclick="setStatus('${s}')">
+                        ${capitalize(s)} <span class="count">${counts[s]}</span>
+                    </button>
+                `,
+                ).join("")}
+            `;
+      }
+
+      function setStatus(status) {
+        currentStatus = status;
+        renderTabs();
+        renderTable();
+      }
+
+      function capitalize(s) {
+        return s.charAt(0).toUpperCase() + s.slice(1);
+      }
+
+      // ---- TABLE ----
+      function renderTable() {
+        const container = document.getElementById("orders-table-container");
+        let filtered = [...orders];
+
+        if (currentStatus !== "all")
+          filtered = filtered.filter((o) => o.status === currentStatus);
+
+        if (currentSearch) {
+          const q = currentSearch.toLowerCase();
+          filtered = filtered.filter(
+            (o) =>
+              String(o.id).toLowerCase().includes(q) ||
+              (o.username && o.username.toLowerCase().includes(q)),
+          );
+        }
+
+        if (filtered.length === 0) {
+          container.innerHTML = `
+                    <div class="empty-orders">
+                        <div class="icon">📦</div>
+                        <h3>No orders found</h3>
+                        <p>${currentSearch || currentStatus !== "all" ? "Try adjusting your filters." : "Customer orders will appear here."}</p>
+                    </div>
+                `;
+          return;
+        }
+
+        container.innerHTML = `
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th>Order ID</th>
+                            <th>Customer</th>
+                            <th>Items</th>
+                            <th>Total</th>
+                            <th>Date</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${filtered
+                          .map(
+                            (o) => `
+                            <tr>
+                                <td><strong>ORD-${String(o.id).padStart(5, "0")}</strong></td>
+                                <td>
+                                    ${o.username}
+                                    <div style="font-size: var(--fs-xs); color: var(--gray-500);">${o.email || ""}</div>
+                                </td>
+                                <td>${o.items.length} item${o.items.length > 1 ? "s" : ""}</td>
+                                <td><strong>₦${Number(o.total).toLocaleString()}</strong></td>
+                                <td>${formatDate(o.createdAt)}</td>
+                                <td>
+                                    <select class="status-select ${o.status}" onchange="updateStatus(${o.id}, this.value)">
+                                        ${STATUSES.map(
+                                          (s) => `
+                                            <option value="${s}" ${o.status === s ? "selected" : ""}>${capitalize(s)}</option>
+                                        `,
+                                        ).join("")}
+                                    </select>
+                                </td>
+                                <td>
+                                    <button class="icon-btn edit" title="View details" onclick="viewOrder(${o.id})">👁️</button>
+                                </td>
+                            </tr>
+                        `,
+                          )
+                          .join("")}
+                    </tbody>
+                </table>
+            `;
+      }
+
+      // ---- UPDATE STATUS ----
+      async function updateStatus(orderId, newStatus) {
+        try {
+          await apiFetch(`/orders/admin/${orderId}/status`, {
+            method: "PUT",
+            body: JSON.stringify({ status: newStatus }),
+          });
+          showToast(`Order updated to ${newStatus}`);
+          await loadOrders();
+        } catch (error) {
+          showToast(error.message, "error");
+        }
+      }
+
+      // ---- VIEW DETAILS ----
+      function viewOrder(orderId) {
+        const order = orders.find((o) => o.id === orderId);
+        if (!order) return;
+
+        const itemsHtml = order.items
+          .map(
+            (item) => `
+                <div class="item-row">
+                    <div class="item-icon">📦</div>
+                    <div>
+                        <div class="item-name">${item.name}</div>
+                        <div class="item-qty">₦${Number(item.price).toLocaleString()} × ${item.quantity}</div>
+                    </div>
+                    <div class="item-price">₦${(Number(item.price) * item.quantity).toLocaleString()}</div>
+                    <div></div>
+                </div>
+            `,
+          )
+          .join("");
+
+        // shippingAddress may include newlines
+        const addressLines = (order.shippingAddress || "").split("\n");
+        const fullName = addressLines[0] || "";
+        const address = addressLines.slice(1).join(", ") || "";
+
+        document.getElementById("modal-content").innerHTML = `
+                <div class="order-details-header">
+                    <div>
+                        <h2>ORD-${String(order.id).padStart(5, "0")}</h2>
+                        <div class="date">Placed ${formatDate(order.createdAt, true)}</div>
+                    </div>
+                    <button class="btn btn-ghost btn-sm" onclick="closeModal()">✕ Close</button>
+                </div>
+
+                <div class="detail-section">
+                    <h4>Customer</h4>
+                    <p><strong>${fullName}</strong></p>
+                    <p>@${order.username}</p>
+                    <p>📞 ${order.phone}</p>
+                </div>
+
+                <div class="detail-section">
+                    <h4>Delivery Address</h4>
+                    <p>${address}</p>
+                </div>
+
+                <div class="detail-section">
+                    <h4>Items (${order.items.length})</h4>
+                    <div class="order-items-list">${itemsHtml}</div>
+                </div>
+
+                <div class="order-total-row">
+                    <span>Total</span>
+                    <span>₦${Number(order.total).toLocaleString()}</span>
+                </div>
+
+                <div class="modal-actions" style="justify-content: space-between;">
+                    <span class="badge badge-${getStatusBadge(order.status)}">${order.status.toUpperCase()}</span>
+                    <button class="btn btn-primary" onclick="closeModal()">Done</button>
+                </div>
+            `;
+
+        document.getElementById("modal-overlay").classList.add("active");
+      }
+
+      function closeModal() {
+        document.getElementById("modal-overlay").classList.remove("active");
+      }
+
+      function getStatusBadge(status) {
+        switch (status) {
+          case "pending":
+            return "warning";
+          case "processing":
+            return "info";
+          case "shipped":
+            return "info";
+          case "delivered":
+            return "success";
+          case "cancelled":
+            return "danger";
+          default:
+            return "info";
+        }
+      }
+
+      function formatDate(iso, withTime = false) {
+        const d = new Date(iso);
+        const opts = { day: "numeric", month: "short", year: "numeric" };
+        if (withTime) {
+          opts.hour = "2-digit";
+          opts.minute = "2-digit";
+        }
+        return d.toLocaleDateString("en-NG", opts);
+      }
+
+      // ---- EVENTS ----
+      document.getElementById("search-input").addEventListener("input", (e) => {
+        currentSearch = e.target.value;
+        renderTable();
+      });
+      document
+        .getElementById("modal-overlay")
+        .addEventListener("click", (e) => {
+          if (e.target.id === "modal-overlay") closeModal();
+        });
+
+      // ---- INIT ----
+      loadOrders();
+    </script>
+  </body>
+</html>

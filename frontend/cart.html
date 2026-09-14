@@ -1,0 +1,485 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Cart — Bencodez-Ventures</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="css/style.css" />
+    <style>
+      .cart-layout {
+        display: grid;
+        grid-template-columns: 1fr 380px;
+        gap: var(--s-8);
+        margin-top: var(--s-6);
+      }
+      .cart-items {
+        background: var(--white);
+        border-radius: var(--radius-lg);
+        padding: var(--s-6);
+        box-shadow: var(--shadow-sm);
+      }
+      .cart-items h2 {
+        font-size: var(--fs-xl);
+        margin-bottom: var(--s-6);
+        padding-bottom: var(--s-4);
+        border-bottom: 1px solid var(--gray-100);
+      }
+      .cart-item {
+        display: grid;
+        grid-template-columns: 80px 1fr auto;
+        gap: var(--s-4);
+        padding: var(--s-4) 0;
+        border-bottom: 1px solid var(--gray-100);
+        align-items: center;
+      }
+      .cart-item:last-child {
+        border-bottom: none;
+      }
+      .cart-item-image {
+        width: 80px;
+        height: 80px;
+        background: var(--gray-100);
+        border-radius: var(--radius);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2.5rem;
+      }
+      .cart-item-info h4 {
+        font-size: var(--fs-base);
+        margin-bottom: var(--s-1);
+        color: var(--charcoal);
+      }
+      .cart-item-info .item-category {
+        font-size: var(--fs-xs);
+        color: var(--gray-500);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: var(--s-2);
+      }
+      .cart-item-info .item-price {
+        font-size: var(--fs-sm);
+        color: var(--navy);
+        font-weight: 700;
+      }
+      .cart-item-actions {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        gap: var(--s-3);
+      }
+      .cart-item-actions .qty-selector {
+        display: flex;
+        align-items: center;
+        border: 2px solid var(--gray-300);
+        border-radius: var(--radius);
+        overflow: hidden;
+      }
+      .cart-item-actions .qty-selector button {
+        width: 32px;
+        height: 32px;
+        font-weight: 700;
+        color: var(--navy);
+        background: var(--gray-100);
+        transition: background var(--transition);
+      }
+      .cart-item-actions .qty-selector button:hover {
+        background: var(--gray-300);
+      }
+      .cart-item-actions .qty-selector span {
+        width: 40px;
+        text-align: center;
+        font-weight: 600;
+        font-size: var(--fs-sm);
+      }
+      .remove-btn {
+        font-size: var(--fs-xs);
+        color: var(--danger);
+        font-weight: 600;
+        transition: opacity var(--transition);
+      }
+      .remove-btn:hover {
+        opacity: 0.7;
+      }
+      .cart-summary {
+        background: var(--white);
+        border-radius: var(--radius-lg);
+        padding: var(--s-6);
+        box-shadow: var(--shadow-sm);
+        height: fit-content;
+        position: sticky;
+        top: 100px;
+      }
+      .cart-summary h3 {
+        font-size: var(--fs-lg);
+        margin-bottom: var(--s-6);
+        padding-bottom: var(--s-4);
+        border-bottom: 1px solid var(--gray-100);
+      }
+      .summary-row {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: var(--s-3);
+        font-size: var(--fs-sm);
+        color: var(--gray-700);
+      }
+      .summary-row.total {
+        font-size: var(--fs-xl);
+        font-weight: 800;
+        color: var(--navy);
+        padding-top: var(--s-4);
+        margin-top: var(--s-4);
+        border-top: 2px solid var(--gray-100);
+      }
+      .checkout-form {
+        margin-top: var(--s-6);
+        padding-top: var(--s-6);
+        border-top: 1px solid var(--gray-100);
+      }
+      .checkout-form h3 {
+        font-size: var(--fs-lg);
+        margin-bottom: var(--s-4);
+      }
+      .checkout-form textarea {
+        resize: vertical;
+        min-height: 80px;
+      }
+      .empty-cart {
+        text-align: center;
+        padding: var(--s-16) var(--s-6);
+        background: var(--white);
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-sm);
+      }
+      .empty-cart .icon {
+        font-size: 5rem;
+        margin-bottom: var(--s-4);
+      }
+      .empty-cart h2 {
+        margin-bottom: var(--s-3);
+      }
+      .toast {
+        position: fixed;
+        bottom: var(--s-6);
+        right: var(--s-6);
+        background: var(--navy);
+        color: var(--white);
+        padding: var(--s-4) var(--s-6);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow-lg);
+        font-weight: 600;
+        transform: translateY(200%);
+        transition: transform var(--transition);
+        z-index: 1000;
+        max-width: 320px;
+      }
+      .toast.show {
+        transform: translateY(0);
+      }
+      .toast.success {
+        background: var(--success);
+      }
+      .toast.error {
+        background: var(--danger);
+      }
+      @media (max-width: 900px) {
+        .cart-layout {
+          grid-template-columns: 1fr;
+        }
+        .cart-summary {
+          position: static;
+        }
+      }
+    </style>
+    <link rel="stylesheet" href="css/mobile.css" />
+  </head>
+  <body>
+    <header class="header"><!-- injected by header.js --></header>
+
+    <section class="section" style="padding-top: var(--s-8)">
+      <div class="container">
+        <h1 style="margin-bottom: var(--s-2)">Your Cart</h1>
+        <p>Review your items and place your order.</p>
+        <div id="cart-container"></div>
+      </div>
+    </section>
+
+    <div class="toast" id="toast">Added to cart!</div>
+
+    <footer class="footer">
+      <div class="container">
+        <div
+          class="footer-bottom"
+          style="border-top: none; padding-top: 0; margin-top: 0"
+        >
+          © 2026 Bencodez-Ventures. All rights reserved.
+        </div>
+      </div>
+    </footer>
+
+    <script src="js/header.js"></script>
+    <script>
+      const API = "http://localhost:3000";
+      const DELIVERY_FEE = 2500;
+
+      // ---- LOGGED-IN USER ----
+      const user = JSON.parse(localStorage.getItem("user") || "null");
+
+      // ---- PRODUCTS (loaded from API) ----
+      let products = [];
+
+      async function loadProducts() {
+        const res = await fetch(`${API}/products`);
+        if (!res.ok) throw new Error("Failed to load products");
+        products = await res.json();
+      }
+
+      // ---- CART HELPERS ----
+      function getCart() {
+        return JSON.parse(localStorage.getItem("cart") || "[]");
+      }
+      function saveCart(cart) {
+        localStorage.setItem("cart", JSON.stringify(cart));
+        updateCartCount();
+      }
+      function updateCartCount() {
+        const count = getCart().reduce((sum, item) => sum + item.quantity, 0);
+        document.getElementById("cart-count").textContent = count;
+      }
+      function showToast(message, type = "success") {
+        const toast = document.getElementById("toast");
+        toast.textContent = message;
+        toast.className = `toast show ${type}`;
+        setTimeout(() => {
+          toast.classList.remove("show");
+        }, 2500);
+      }
+      function getCartDetailed() {
+        const cart = getCart();
+        return cart
+          .map((item) => {
+            const product = products.find((p) => p.id === item.productId);
+            return product ? { ...product, quantity: item.quantity } : null;
+          })
+          .filter(Boolean);
+      }
+
+      // ---- RENDER CART ----
+      function renderCart() {
+        const cart = getCartDetailed();
+        const container = document.getElementById("cart-container");
+
+        if (cart.length === 0) {
+          container.innerHTML = `
+                    <div class="empty-cart">
+                        <div class="icon">🛒</div>
+                        <h2>Your cart is empty</h2>
+                        <p style="margin-bottom: var(--s-6);">Looks like you haven't added anything yet.</p>
+                        <a href="shop.html" class="btn btn-primary btn-lg">Start Shopping →</a>
+                    </div>`;
+          return;
+        }
+
+        const subtotal = cart.reduce(
+          (sum, item) => sum + Number(item.price) * item.quantity,
+          0,
+        );
+        const total = subtotal + DELIVERY_FEE;
+
+        container.innerHTML = `
+                <div class="cart-layout">
+                    <div class="cart-items">
+                        <h2>Items (${cart.length})</h2>
+                        ${cart
+                          .map(
+                            (item) => `
+                            <div class="cart-item">
+                                <div class="cart-item-image">
+    ${
+      item.image_url
+        ? `<img src="${item.image_url}" alt="${item.name}" style="width:100%; height:100%; object-fit:cover; border-radius:inherit;">`
+        : "📦"
+    }
+</div>
+                                <div class="cart-item-info">
+                                    <h4>${item.name}</h4>
+                                    <div class="item-category">${item.category}</div>
+                                    <div class="item-price">₦${Number(item.price).toLocaleString()} × ${item.quantity} = ₦${(Number(item.price) * item.quantity).toLocaleString()}</div>
+                                </div>
+                                <div class="cart-item-actions">
+                                    <div class="qty-selector">
+                                        <button onclick="changeQty(${item.id}, -1)">−</button>
+                                        <span>${item.quantity}</span>
+                                        <button onclick="changeQty(${item.id}, 1)">+</button>
+                                    </div>
+                                    <button class="remove-btn" onclick="removeItem(${item.id})">Remove</button>
+                                </div>
+                            </div>
+                        `,
+                          )
+                          .join("")}
+                    </div>
+
+                    <div class="cart-summary">
+                        <h3>Order Summary</h3>
+                        <div class="summary-row">
+                            <span>Subtotal</span>
+                            <span>₦${subtotal.toLocaleString()}</span>
+                        </div>
+                        <div class="summary-row">
+                            <span>Delivery</span>
+                            <span>₦${DELIVERY_FEE.toLocaleString()}</span>
+                        </div>
+                        <div class="summary-row total">
+                            <span>Total</span>
+                            <span>₦${total.toLocaleString()}</span>
+                        </div>
+
+                        <form class="checkout-form" id="checkout-form">
+                            <h3>Delivery Details</h3>
+                            <div class="form-group">
+                                <label>Full Name</label>
+                                <input type="text" class="form-control" id="full-name" placeholder="John Doe" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Phone Number</label>
+                                <input type="tel" class="form-control" id="phone" placeholder="08012345678" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Delivery Address</label>
+                                <textarea class="form-control" id="address" placeholder="Street, City, State" required></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-accent btn-lg btn-block">
+                                Place Order — ₦${total.toLocaleString()}
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            `;
+
+        document
+          .getElementById("checkout-form")
+          .addEventListener("submit", handleCheckout);
+      }
+
+      function changeQty(productId, delta) {
+        const cart = getCart();
+        const item = cart.find((i) => i.productId === productId);
+        if (!item) return;
+        const product = products.find((p) => p.id === productId);
+        if (!product) return;
+        const newQty = item.quantity + delta;
+        if (newQty <= 0) {
+          removeItem(productId);
+          return;
+        }
+        if (newQty > product.stock) {
+          showToast(`Only ${product.stock} available`, "error");
+          return;
+        }
+        item.quantity = newQty;
+        saveCart(cart);
+        renderCart();
+      }
+
+      function removeItem(productId) {
+        const cart = getCart().filter((i) => i.productId !== productId);
+        saveCart(cart);
+        renderCart();
+        showToast("Item removed from cart", "success");
+      }
+
+      // ---- CHECKOUT ----
+      async function handleCheckout(e) {
+        e.preventDefault();
+
+        const fullName = document.getElementById("full-name").value.trim();
+        const phone = document.getElementById("phone").value.trim();
+        const address = document.getElementById("address").value.trim();
+
+        if (!fullName || !phone || !address) {
+          showToast("Please fill in all fields", "error");
+          return;
+        }
+
+        if (!user || !user.id) {
+          showToast("Please log in to place an order", "error");
+          setTimeout(() => {
+            window.location.href = "login.html";
+          }, 1500);
+          return;
+        }
+
+        const cart = getCartDetailed();
+        const items = cart.map((item) => ({
+          productId: item.id,
+          quantity: item.quantity,
+        }));
+
+        const submitBtn = e.target.querySelector("button[type='submit']");
+        const originalText = submitBtn.textContent;
+        submitBtn.disabled = true;
+        submitBtn.textContent = "Placing order...";
+
+        try {
+          const res = await fetch(`${API}/orders`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+            body: JSON.stringify({
+              items,
+              fullName,
+              phone,
+              shippingAddress: address,
+            }),
+          });
+
+          const data = await res.json();
+
+          if (!res.ok) {
+            throw new Error(data.error || "Failed to place order");
+          }
+
+          localStorage.setItem("cart", "[]");
+
+          showToast("Order placed successfully! 🎉", "success");
+          setTimeout(() => {
+            window.location.href = "account.html";
+          }, 1500);
+        } catch (error) {
+          console.error(error);
+          showToast(error.message, "error");
+          submitBtn.disabled = false;
+          submitBtn.textContent = originalText;
+        }
+      }
+
+      // ---- INIT ----
+      async function init() {
+        updateCartCount();
+        try {
+          await loadProducts();
+          renderCart();
+        } catch (error) {
+          console.error(error);
+          document.getElementById("cart-container").innerHTML = `
+                    <div class="empty-cart">
+                        <div class="icon">⚠️</div>
+                        <h2>Could not load products</h2>
+                        <p>Make sure the backend is running.</p>
+                    </div>`;
+        }
+      }
+
+      init();
+    </script>
+  </body>
+</html>

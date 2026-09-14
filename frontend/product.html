@@ -1,0 +1,485 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Product — Bencodez-Ventures</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="css/style.css" />
+    <style>
+      /* Breadcrumb */
+      .breadcrumb {
+        padding: var(--s-4) 0;
+        font-size: var(--fs-sm);
+        color: var(--gray-500);
+      }
+      .breadcrumb a {
+        color: var(--gray-700);
+      }
+      .breadcrumb a:hover {
+        color: var(--navy);
+      }
+      .breadcrumb span {
+        margin: 0 var(--s-2);
+      }
+
+      /* Product layout */
+      .product-layout {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: var(--s-12);
+        background: var(--white);
+        padding: var(--s-8);
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-sm);
+      }
+      .product-image-large {
+        background: var(--gray-100);
+        border-radius: var(--radius-lg);
+        aspect-ratio: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 12rem;
+        position: relative;
+      }
+      .product-image-large .category-tag {
+        position: absolute;
+        top: var(--s-4);
+        left: var(--s-4);
+        background: var(--white);
+        padding: var(--s-2) var(--s-4);
+        border-radius: var(--radius-full);
+        font-size: var(--fs-sm);
+        font-weight: 600;
+        color: var(--navy);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+
+      .product-details h1 {
+        font-size: var(--fs-3xl);
+        margin-bottom: var(--s-3);
+      }
+      .product-details .price-large {
+        font-size: var(--fs-4xl);
+        font-weight: 800;
+        color: var(--navy);
+        margin-bottom: var(--s-4);
+      }
+      .product-details .description {
+        color: var(--gray-700);
+        line-height: 1.8;
+        margin-bottom: var(--s-6);
+      }
+
+      .stock-info {
+        display: inline-flex;
+        align-items: center;
+        gap: var(--s-2);
+        padding: var(--s-2) var(--s-4);
+        border-radius: var(--radius-full);
+        font-size: var(--fs-sm);
+        font-weight: 600;
+        margin-bottom: var(--s-6);
+      }
+      .stock-info.in-stock {
+        background: #dcfce7;
+        color: var(--success);
+      }
+      .stock-info.low-stock {
+        background: #fef3c7;
+        color: var(--warning);
+      }
+      .stock-info.out-of-stock {
+        background: #fee2e2;
+        color: var(--danger);
+      }
+
+      /* Quantity + Add to cart */
+      .purchase-row {
+        display: flex;
+        gap: var(--s-4);
+        margin-bottom: var(--s-6);
+        flex-wrap: wrap;
+      }
+      .quantity-selector {
+        display: flex;
+        align-items: center;
+        border: 2px solid var(--gray-300);
+        border-radius: var(--radius);
+        overflow: hidden;
+        background: var(--white);
+      }
+      .quantity-selector button {
+        width: 44px;
+        height: 48px;
+        font-size: var(--fs-xl);
+        font-weight: 700;
+        color: var(--navy);
+        background: var(--gray-100);
+        transition: background var(--transition);
+      }
+      .quantity-selector button:hover {
+        background: var(--gray-300);
+      }
+      .quantity-selector input {
+        width: 60px;
+        height: 48px;
+        border: none;
+        text-align: center;
+        font-size: var(--fs-base);
+        font-weight: 600;
+        background: var(--white);
+      }
+      .quantity-selector input:focus {
+        outline: none;
+      }
+
+      .purchase-row .btn {
+        flex: 1;
+        min-width: 160px;
+      }
+
+      /* Meta info */
+      .product-meta {
+        border-top: 1px solid var(--gray-100);
+        padding-top: var(--s-6);
+        font-size: var(--fs-sm);
+        color: var(--gray-500);
+      }
+      .product-meta p {
+        margin-bottom: var(--s-2);
+      }
+      .product-meta strong {
+        color: var(--gray-700);
+      }
+
+      /* Related */
+      .related-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+        gap: var(--s-6);
+      }
+      .related-grid .product-card {
+        background: var(--white);
+        border-radius: var(--radius-lg);
+        overflow: hidden;
+        box-shadow: var(--shadow-sm);
+        transition: all var(--transition);
+        display: flex;
+        flex-direction: column;
+      }
+      .related-grid .product-card:hover {
+        transform: translateY(-4px);
+        box-shadow: var(--shadow-lg);
+      }
+      .related-grid .product-image {
+        background: var(--gray-100);
+        height: 180px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 3rem;
+      }
+      .related-grid .product-info {
+        padding: var(--s-4);
+      }
+      .related-grid .price {
+        font-weight: 700;
+        color: var(--navy);
+        margin-bottom: var(--s-3);
+      }
+
+      /* Toast notification */
+      .toast {
+        position: fixed;
+        bottom: var(--s-6);
+        right: var(--s-6);
+        background: var(--navy);
+        color: var(--white);
+        padding: var(--s-4) var(--s-6);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow-lg);
+        font-weight: 600;
+        transform: translateY(200%);
+        transition: transform var(--transition);
+        z-index: 1000;
+      }
+      .toast.show {
+        transform: translateY(0);
+      }
+      .toast.success {
+        background: var(--success);
+      }
+      .toast.error {
+        background: var(--danger);
+      }
+
+      /* Mobile */
+      @media (max-width: 768px) {
+        .product-layout {
+          grid-template-columns: 1fr;
+          gap: var(--s-6);
+        }
+        .product-image-large {
+          font-size: 8rem;
+        }
+      }
+    </style>
+    <link rel="stylesheet" href="css/mobile.css" />
+  </head>
+  <body>
+    <!-- HEADER -->
+    <header class="header"><!-- injected by header.js --></header>
+
+    <!-- BREADCRUMB -->
+    <div class="container">
+      <div class="breadcrumb">
+        <a href="index.html">Home</a>
+        <span>›</span>
+        <a href="shop.html">Shop</a>
+        <span>›</span>
+        <span id="breadcrumb-name">Product</span>
+      </div>
+    </div>
+
+    <!-- PRODUCT DETAIL -->
+    <section class="section" style="padding-top: var(--s-4)">
+      <div class="container">
+        <div id="product-container">
+          <!-- Filled by JS -->
+        </div>
+
+        <!-- RELATED PRODUCTS -->
+        <div
+          id="related-section"
+          class="hidden"
+          style="margin-top: var(--s-16)"
+        >
+          <div class="section-header" style="text-align: left">
+            <h2>You may also like</h2>
+          </div>
+          <div class="related-grid" id="related-grid"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TOAST -->
+    <div class="toast" id="toast">Added to cart!</div>
+
+    <!-- FOOTER -->
+    <footer class="footer">
+      <div class="container">
+        <div
+          class="footer-bottom"
+          style="border-top: none; padding-top: 0; margin-top: 0"
+        >
+          © 2026 Bencodez-Ventures. All rights reserved.
+        </div>
+      </div>
+    </footer>
+    <script src="js/header.js"></script>
+
+    <script>
+      const API = "http://localhost:3000";
+
+      // ---- CART HELPERS ----
+      function getCart() {
+        return JSON.parse(localStorage.getItem("cart") || "[]");
+      }
+      function saveCart(cart) {
+        localStorage.setItem("cart", JSON.stringify(cart));
+        updateCartCount();
+      }
+      function updateCartCount() {
+        const cart = getCart();
+        const count = cart.reduce((sum, item) => sum + item.quantity, 0);
+        document.getElementById("cart-count").textContent = count;
+      }
+      function addToCart(productId, quantity) {
+        const cart = getCart();
+        const existing = cart.find((item) => item.productId === productId);
+        if (existing) {
+          existing.quantity += quantity;
+        } else {
+          cart.push({ productId, quantity });
+        }
+        saveCart(cart);
+      }
+
+      // ---- TOAST ----
+      function showToast(message, type = "success") {
+        const toast = document.getElementById("toast");
+        toast.textContent = message;
+        toast.className = `toast show ${type}`;
+        setTimeout(() => {
+          toast.classList.remove("show");
+        }, 2500);
+      }
+
+      // ---- GET PRODUCT ID FROM URL ----
+      const params = new URLSearchParams(window.location.search);
+      const productId = parseInt(params.get("id"));
+
+      // ---- LOAD AND RENDER ----
+      async function init() {
+        const container = document.getElementById("product-container");
+
+        if (!productId) {
+          container.innerHTML = `
+                    <div style="text-align:center; padding: var(--s-16); background: var(--white); border-radius: var(--radius-lg);">
+                        <div style="font-size: 4rem; margin-bottom: var(--s-4);">🔍</div>
+                        <h2>Product not found</h2>
+                        <p style="margin-bottom: var(--s-6);">No product ID provided.</p>
+                        <a href="shop.html" class="btn btn-primary">Back to Shop</a>
+                    </div>`;
+          return;
+        }
+
+        container.innerHTML = `<div style="text-align:center; padding: var(--s-16);">Loading...</div>`;
+
+        try {
+          // Fetch product
+          const res = await fetch(`${API}/products/${productId}`);
+          if (!res.ok) throw new Error("Product not found");
+          const product = await res.json();
+
+          // Update breadcrumb
+          document.getElementById("breadcrumb-name").textContent = product.name;
+          document.title = `${product.name} — Bencodez-Ventures`;
+
+          // Stock label
+          let stockLabel, stockClass;
+          if (product.stock === 0) {
+            stockLabel = "Out of Stock";
+            stockClass = "out-of-stock";
+          } else if (product.stock <= 5) {
+            stockLabel = `Only ${product.stock} left`;
+            stockClass = "low-stock";
+          } else {
+            stockLabel = `In Stock (${product.stock} available)`;
+            stockClass = "in-stock";
+          }
+
+          // Render
+          container.innerHTML = `
+                    <div class="product-layout">
+                        <div class="product-image-large">
+    <span class="category-tag">${product.category}</span>
+    ${
+      product.image_url
+        ? `<img src="${product.image_url}" alt="${product.name}" style="width:100%; height:100%; object-fit:cover;">`
+        : "📦"
+    }
+</div>
+                        <div class="product-details">
+                            <h1>${product.name}</h1>
+                            <div class="price-large">₦${Number(product.price).toLocaleString()}</div>
+                            <span class="stock-info ${stockClass}">
+                                ${stockClass === "in-stock" ? "●" : stockClass === "low-stock" ? "⚠" : "✕"}
+                                ${stockLabel}
+                            </span>
+                            <p class="description">${product.description || "No description available."}</p>
+
+                            <div class="purchase-row">
+                                <div class="quantity-selector">
+                                    <button id="qty-minus">−</button>
+                                    <input type="number" id="qty-input" value="1" min="1" max="${product.stock}" ${product.stock === 0 ? "disabled" : ""}>
+                                    <button id="qty-plus">+</button>
+                                </div>
+                                <button class="btn btn-primary" id="add-btn" ${product.stock === 0 ? "disabled" : ""}>
+                                    🛒 Add to Cart
+                                </button>
+                                <button class="btn btn-accent" id="buy-btn" ${product.stock === 0 ? "disabled" : ""}>
+                                    Buy Now
+                                </button>
+                            </div>
+
+                            <div class="product-meta">
+                                <p><strong>Category:</strong> ${product.category}</p>
+                                <p><strong>Product ID:</strong> #${product.id}</p>
+                                <p><strong>Delivery:</strong> 2–5 business days across Nigeria</p>
+                            </div>
+                        </div>
+                    </div>
+                `;
+
+          // Quantity buttons
+          const qtyInput = document.getElementById("qty-input");
+          document.getElementById("qty-minus").addEventListener("click", () => {
+            const val = parseInt(qtyInput.value);
+            if (val > 1) qtyInput.value = val - 1;
+          });
+          document.getElementById("qty-plus").addEventListener("click", () => {
+            const val = parseInt(qtyInput.value);
+            if (val < product.stock) qtyInput.value = val + 1;
+          });
+
+          // Add to cart
+          document.getElementById("add-btn").addEventListener("click", () => {
+            const qty = parseInt(qtyInput.value);
+            addToCart(product.id, qty);
+            showToast(`Added ${qty} × ${product.name} to cart`, "success");
+          });
+
+          // Buy now
+          document.getElementById("buy-btn").addEventListener("click", () => {
+            const qty = parseInt(qtyInput.value);
+            addToCart(product.id, qty);
+            window.location.href = "cart.html";
+          });
+
+          // ---- RELATED PRODUCTS ----
+          const relatedRes = await fetch(
+            `${API}/products?category=${product.category}`,
+          );
+          const related = await relatedRes.json();
+          const relatedFiltered = related
+            .filter((p) => p.id !== product.id)
+            .slice(0, 4);
+
+          if (relatedFiltered.length > 0) {
+            document
+              .getElementById("related-section")
+              .classList.remove("hidden");
+            document.getElementById("related-grid").innerHTML = relatedFiltered
+              .map(
+                (p) => `
+                        <div class="product-card">
+                            <div class="product-image">📦</div>
+                            <div class="product-info">
+                                <h4>${p.name}</h4>
+                                <div class="price">₦${Number(p.price).toLocaleString()}</div>
+                                <a href="product.html?id=${p.id}" class="btn btn-primary btn-block">View Details</a>
+                            </div>
+                        </div>
+                    `,
+              )
+              .join("");
+          }
+        } catch (error) {
+          console.error(error);
+          container.innerHTML = `
+                    <div style="text-align:center; padding: var(--s-16); background: var(--white); border-radius: var(--radius-lg);">
+                        <div style="font-size: 4rem; margin-bottom: var(--s-4);">⚠️</div>
+                        <h2>Product not found</h2>
+                        <p style="margin-bottom: var(--s-6);">This product doesn't exist or was removed.</p>
+                        <a href="shop.html" class="btn btn-primary">Back to Shop</a>
+                    </div>`;
+        }
+      }
+
+      // Init cart count
+      updateCartCount();
+
+      // Run
+      init();
+    </script>
+  </body>
+</html>
