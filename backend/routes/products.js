@@ -1,4 +1,5 @@
 const express = require('express');
+const { createClient } = require('@supabase/supabase-js');
 const pool = require('../db');
 const authenticateToken = require('../middleware/auth');
 const isAdmin = require('../middleware/isAdmin');
@@ -9,10 +10,12 @@ const {
 } = require('../middleware/validation');
 const upload = require('../middleware/upload');
 
+const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_KEY);
+
 const router = express.Router();
 
 // ============================================================
-// PUBLIC ROUTES (no auth required)
+// PUBLIC ROUTES
 // ============================================================
 
 // GET /products — list all active products (optionally filtered by category)
@@ -56,7 +59,7 @@ router.get('/:id', async (req, res) => {
 });
 
 // ============================================================
-// ADMIN ROUTES (auth + admin required)
+// ADMIN ROUTES
 // ============================================================
 
 // GET /products/admin/all — all products including inactive
@@ -70,10 +73,46 @@ router.get('/admin/all', authenticateToken, isAdmin, async (req, res) => {
     }
 });
 
+// POST /products/upload — upload image to Supabase Storage (admin only)
+router.post('/upload', authenticateToken, isAdmin, upload.single('image'), async (req, res) => {
+    try {
+        if (!req.file) {
+            return res.status(400).json({ error: 'No file uploaded' });
+        }
+
+        // Generate unique filename
+        const ext = req.file.originalname.split('.').pop().toLowerCase();
+        const filename = `${Date.now()}-${Math.random().toString(36).substring(7)}.${ext}`;
+
+        // Upload to Supabase Storage
+        const { data, error } = await supabase.storage
+            .from('product-images')
+            .upload(filename, req.file.buffer, {
+                contentType: req.file.mimetype,
+                upsert: false
+            });
+
+        if (error) {
+            console.error('Supabase upload error:', error);
+            return res.status(500).json({ error: error.message });
+        }
+
+        // Get public URL
+        const { data: urlData } = supabase.storage
+            .from('product-images')
+            .getPublicUrl(filename);
+
+        res.json({ url: urlData.publicUrl });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Upload failed' });
+    }
+});
+
 // POST /products — create new product (admin only)
 router.post('/', authenticateToken, isAdmin, validate(createProductSchema), async (req, res) => {
     try {
-        const { name, description, price, imageUrl, category, stock, icon } = req.body;
+        const { name, description, price, imageUrl, category, stock } = req.body;
 
         const result = await pool.query(
             `INSERT INTO products (name, description, price, image_url, category, stock)
@@ -88,15 +127,6 @@ router.post('/', authenticateToken, isAdmin, validate(createProductSchema), asyn
         res.status(500).json({ error: 'Server error' });
     }
 });
-// POST /products/upload — upload an image (admin only)
-router.post('/upload', authenticateToken, isAdmin, upload.single('image'), (req, res) => {
-    if (!req.file) {
-        return res.status(400).json({ error: 'No file uploaded' });
-    }
-    // Build public URL — frontend will store this in the product's image_url
-    const url = `${req.protocol}://${req.get('host')}/uploads/${req.file.filename}`;
-    res.json({ url });
-});
 
 // PUT /products/:id — update product (admin only)
 router.put('/:id', authenticateToken, isAdmin, validate(updateProductSchema), async (req, res) => {
@@ -104,7 +134,6 @@ router.put('/:id', authenticateToken, isAdmin, validate(updateProductSchema), as
         const id = parseInt(req.params.id);
         const { name, description, price, imageUrl, category, stock, isActive } = req.body;
 
-        // Fetch existing product
         const existing = await pool.query('SELECT * FROM products WHERE id = $1', [id]);
         if (existing.rows.length === 0) {
             return res.status(404).json({ error: 'Product not found' });
