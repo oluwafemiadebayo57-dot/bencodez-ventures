@@ -349,3 +349,13 @@
     }
     .admin-main { padding: var(--s-4); }
 }
+/* Prevent horizontal scroll on the body */
+html, body {
+    overflow-x: hidden;
+    max-width: 100vw;
+}
+
+/* Ensure table wrapper scrolls, not the whole page */
+.admin-panel {
+    max-width: 100%;
+}
